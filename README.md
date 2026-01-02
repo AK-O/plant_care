@@ -1,3 +1,6 @@
+[![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
+[![GitHub stars](https://img.shields.io/github/stars/AK-O/plant_care?style=social)](https://github.com/AK-O/plant_care/stargazers)
+
 # Plant Care Integration (Home Assistant)
 
 A Home Assistant custom integration to manage  **watering** ,  **fertilizing** , and optional **plant environment monitoring**  **per plant** .
@@ -318,3 +321,13 @@ Environment entities are disabled by default when no external sensors are assign
 ### Will renaming a plant break entity IDs?
 
 No. Friendly names change, but `<plant_id>` stays stable.
+
+---
+
+## ❤️ Support
+
+If this Home Assistant integration is useful to you and saves you time, you can support its development:
+
+☕ **Buy me a coffee:** https://buymeacoffee.com/ako_
+
+Starring the repository ⭐ and reporting issues or improvements are also great ways to help.
