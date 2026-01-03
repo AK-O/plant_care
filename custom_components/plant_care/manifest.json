@@ -3,9 +3,9 @@
   "name": "Plant Care",
   "codeowners": ["@AK-O"],
   "config_flow": true,
-  "documentation": "https://example.invalid",
+  "documentation": "https://github.com/AK-O/plant_care",
   "iot_class": "local_polling",
-  "issue_tracker": "https://example.invalid",
+  "issue_tracker": "https://github.com/AK-O/plant_care/issues",
   "requirements": [],
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
