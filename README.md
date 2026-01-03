@@ -259,17 +259,23 @@ This automation listens to *all* `state_changed` events and notifies you when an
 ```yaml
 alias: Plant Care - Notify on any problem
 description: ""
-triggers:
-  - event_type: state_changed
-    trigger: event
-conditions:
+mode: queued
+
+trigger:
+  - platform: event
+    event_type: state_changed
+
+condition:
   - condition: template
     value_template: >
-      {% set e = trigger.event.data.entity_id %} {% set ns =
-      trigger.event.data.new_state %} {{ e is string
+      {% set e  = trigger.event.data.entity_id %}
+      {% set ns = trigger.event.data.new_state %}
+      {% set os = trigger.event.data.old_state %}
+      {{ e is string
          and e.startswith('binary_sensor.')
          and ns is not none
          and ns.state == 'on'
+         and (os is none or os.state != 'on')
          and ns.attributes.get('device_class') == 'problem'
          and (
            e.endswith('_watering_due')
@@ -279,19 +285,22 @@ conditions:
            or e.endswith('_moisture_out_of_range')
          )
       }}
-actions:
-  - data:
+
+action:
+  - service: notify.mobile_app
+    data:
       title: Plant Care
       message: >
-        🚨 {{ trigger.event.data.new_state.name }} {% set attrs =
-        trigger.event.data.new_state.attributes %} {% if
-        attrs.get('next_due_date') %} Next due: {{ attrs.get('next_due_date') }}
-        {% endif %} {% if attrs.get('days_overdue') is not none %} Overdue: {{
-        attrs.get('days_overdue') }} day(s) {% endif %} {% if
-        attrs.get('deviation') is not none %} Deviation: {{
-        attrs.get('deviation') }} {% endif %}
-    action: notify.mobile_app_phone
-mode: queued
+        {% set ns = trigger.event.data.new_state %}
+        🚨 {{ ns.name }}
+        {% set attrs = ns.attributes %}
+        {% if attrs.get('next_due_date') %} Next due: {{ attrs.get('next_due_date') }}{% endif %}
+        {% if attrs.get('days_overdue') is not none %} Overdue: {{ attrs.get('days_overdue') }} day(s){% endif %}
+        {% if attrs.get('deviation') is not none %}
+          {% set dev = attrs.get('deviation') | float(default=none) %}
+          {% if dev is not none %} Deviation: {{ dev | round(2) }}{% else %} Deviation: {{ attrs.get('deviation') }}{% endif %}
+        {% endif %}
+
 ```
 
 ---
