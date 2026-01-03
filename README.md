@@ -3,14 +3,18 @@
 
 # Plant Care Integration (Home Assistant)
 
-A Home Assistant custom integration to manage  **watering** ,  **fertilizing** , and optional **plant environment monitoring**  **per plant** .
+A Home Assistant custom integration that helps you **track and automate plant care** by exposing **watering and fertilizing schedules** and optional **environment health monitoring** as Home Assistant entities — **one device per plant**.
 
-* ✅ One config entry = one plant
-* ✅ Entity-driven (HA-native, automation-friendly)
-* ✅ Optional environment sensors (no noise if you don’t configure them)
-* ❌ No built-in notifications (use automations)
+The integration does not send notifications itself. Instead, it provides clear, actionable **states and sensors** that you can use in automations, dashboards, and scripts.
+
+* ✅ One config entry = one plant (one HA device)
+* ✅ Interval-based watering & fertilizing with due / overdue tracking
+* ✅ Optional temperature, humidity, and soil moisture monitoring
+* ✅ Fully entity-driven and automation-friendly (HA-native)
+* ❌ No built-in notifications — use the automation examples below.
 
 ---
+
 
 ## Table of Contents
 
@@ -316,20 +320,115 @@ The coordinator recalculates:
   * a number setting changes
 
 ---
-
 ## FAQ
 
-### Why no notifications?
+<details>
+<summary><strong>Click to expand FAQ</strong></summary>
 
-Home Assistant users typically want full control over notification channels, schedules, and quiet hours. This integration exposes  **state** , and you decide what happens via automations.
+### What problem does this integration solve?
+This integration does **not** water your plants automatically.
+
+It helps you **track when care is needed** and **detect problems**, then exposes that information as Home Assistant entities so you can build automations, notifications, and dashboards around it.
+
+Think of it as a **plant care state engine**, not a controller.
+
+---
+
+### Why are there no notifications?
+Home Assistant users typically want full control over notification channels, schedules, and quiet hours.
+
+This integration exposes **state**, and you decide what happens via automations.  
+Feel free to use and adapt the automation templates provided in the README.
+
+---
 
 ### Why are some entities disabled by default?
+Environment-related entities are disabled by default when no external sensors are assigned.
 
-Environment entities are disabled by default when no external sensors are assigned to avoid noise and “unavailable” clutter.
+This avoids:
+- unnecessary noise
+- permanent `unavailable` states
+- clutter in dashboards and entity lists
 
-### Will renaming a plant break entity IDs?
+---
 
-No. Friendly names change, but `<plant_id>` stays stable.
+### What happens if I don’t have temperature / humidity / soil sensors?
+Nothing breaks.
+
+All environment sensors are **optional**:
+- watering and fertilizing tracking still works
+- environment entities remain `unavailable`
+- no false alerts are generated
+
+---
+
+### Will renaming a plant break my automations?
+No.
+
+Entity IDs are based on a generated `<plant_id>` and remain stable.  
+Renaming a plant only affects:
+- the device name
+- friendly names
+
+---
+
+### What does setting an interval to `0` mean?
+An interval of `0` means the feature is **disabled**.
+
+For example:
+- `watering_interval_days = 0` → watering tracking is disabled
+- `fertilizing_interval_days = 0` → fertilizing tracking is disabled
+
+Disabled tasks:
+- never become due
+- never become overdue
+- do not generate alerts
+
+---
+
+### What happens the first time I enable watering or fertilizing?
+If a task has **never been marked as done** and the interval is `> 0`, it is considered **immediately due**.
+
+This avoids silently waiting for weeks after initial setup.
+
+---
+
+### Can I use this with many plants?
+Yes — this is a core design goal.
+
+Each plant:
+- is its own Home Assistant device
+- has its own entities
+- can be filtered, grouped, and automated independently
+
+The integration scales cleanly from **one plant to dozens**.
+
+---
+
+### Does this integrate with the Home Assistant Plant integration?
+No.
+
+This is a separate integration with a different design philosophy:
+- interval-based tasks
+- explicit due / overdue states
+- optional sensors
+- no opinionated notifications
+
+Both integrations can be used side by side if desired.
+
+---
+
+### Why is there no automatic watering or pump control?
+This integration focuses on **state and decision-making**, not hardware control.
+
+If you use pumps, valves, or relays:
+- trigger them via automations
+- use the `*_due` sensors as conditions
+- mark tasks done using the provided buttons
+
+This keeps the integration simple, predictable, and hardware-agnostic.
+
+</details>
 
 ---
 
@@ -337,6 +436,6 @@ No. Friendly names change, but `<plant_id>` stays stable.
 
 If this Home Assistant integration is useful to you and saves you time, you can support its development:
 
-☕ **Buy me a coffee:** https://buymeacoffee.com/ako_
+🍕 **Buy me a pizza:** https://buymeacoffee.com/ako_
 
 Starring the repository ⭐ and reporting issues or improvements are also great ways to help.
