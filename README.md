@@ -56,9 +56,12 @@ Per plant (if you assign external sensors):
 
 ### Option A: HACS (recommended)
 
+<small>*HACS is a third party community store and is not included in Home Assistant out of the box.*</small>
+
 1. Add this repository to HACS as a **custom repository** (type: Integration)
 2. Install **Plant Care Integration**
 3. Restart Home Assistant
+
 
 ### Option B: Manual
 
