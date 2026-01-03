@@ -52,7 +52,7 @@ class PlantCareCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             hass,
             logger=_LOGGER,
             name=f"plant_care_{entry.entry_id}",
-            update_interval=timedelta(minutes=15),  # hourly env checks
+            update_interval=timedelta(minutes=15),
         )
         self.entry = entry
         self.storage = storage

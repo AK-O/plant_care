@@ -1,17 +1,11 @@
 {
     "domain": "plant_care",
     "name": "Plant Care",
-    "version": "0.1.0",
+    "version": "1.0.1",
     "documentation": "https://example.invalid",
     "issue_tracker": "https://example.invalid",
     "requirements": [],
-    "codeowners": [],
+    "codeowners": ["@AK-O"],
     "config_flow": true,
-    "iot_class": "local_polling",
-    "platforms": [
-        "sensor",
-        "binary_sensor",
-        "button",
-        "number"
-    ]
+    "iot_class": "local_polling"
 }

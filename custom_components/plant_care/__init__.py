@@ -2,20 +2,22 @@ from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.event import async_call_later, async_track_time_change
 
 from .const import DOMAIN, PLATFORMS, DEFAULT_OPTIONS
 from .coordinator import PlantCareCoordinator
 from .storage import PlantCareStorage
 
-
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN].setdefault("storage", PlantCareStorage(hass))
-    return True
+# Config-entry-only integration (no YAML setup)
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    # Ensure domain storage exists even without async_setup()
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN].setdefault("storage", PlantCareStorage(hass))
+
     storage: PlantCareStorage = hass.data[DOMAIN]["storage"]
 
     if hasattr(storage, "async_setup"):
@@ -57,9 +59,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     async def _daily_refresh(_now) -> None:
         await coordinator.async_refresh()
 
-    unsub_daily = async_track_time_change(
-        hass, _daily_refresh, hour=3, minute=0, second=0
-    )
+    unsub_daily = async_track_time_change(hass, _daily_refresh, hour=3, minute=0, second=0)
     entry.async_on_unload(unsub_daily)
 
     return True
@@ -69,4 +69,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
+
     return unload_ok

@@ -1,1 +1,131 @@
-{}
+{
+  "title": "Pflanzenpflege",
+
+  "config": {
+    "step": {
+      "user": {
+        "title": "Pflanze hinzufügen",
+        "description": "Lege eine neue Pflanze an und definiere ihre Pflegeparameter.",
+        "data": {
+          "plant_name": "Name der Pflanze",
+          "watering_interval_days": "Gießintervall (Tage)",
+          "fertilizing_interval_days": "Düngeintervall (Tage)",
+          "moisture_min": "Minimale Bodenfeuchte (%)",
+          "moisture_max": "Maximale Bodenfeuchte (%)",
+          "humidity_min": "Minimale Luftfeuchtigkeit (%)",
+          "humidity_max": "Maximale Luftfeuchtigkeit (%)",
+          "temp_min": "Minimale Temperatur (°C)",
+          "temp_max": "Maximale Temperatur (°C)",
+          "light_min": "Minimale Lichtstärke (lx)",
+          "light_max": "Maximale Lichtstärke (lx)",
+          "temp_entity_id": "Temperatursensor",
+          "humidity_entity_id": "Luftfeuchtigkeitssensor",
+          "moisture_entity_id": "Bodenfeuchtesensor"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Diese Pflanze ist bereits konfiguriert"
+    }
+  },
+
+  "options": {
+    "step": {
+      "init": {
+        "title": "Optionale Sensoren",
+        "description": "Wähle optionale externe Sensoren für diese Pflanze.",
+        "data": {
+          "temp_entity_id": "Temperatursensor",
+          "humidity_entity_id": "Luftfeuchtigkeitssensor",
+          "moisture_entity_id": "Bodenfeuchtesensor"
+        }
+      }
+    }
+  },
+
+  "entity": {
+    "sensor": {
+      "watering_last": {
+        "name": "Letztes Gießen"
+      },
+      "watering_next": {
+        "name": "Nächstes Gießen"
+      },
+      "fertilizing_last": {
+        "name": "Letztes Düngen"
+      },
+      "fertilizing_next": {
+        "name": "Nächstes Düngen"
+      },
+      "temperature_deviation": {
+        "name": "Temperaturabweichung"
+      },
+      "humidity_deviation": {
+        "name": "Luftfeuchtigkeitsabweichung"
+      },
+      "moisture_deviation": {
+        "name": "Bodenfeuchteabweichung"
+      }
+    },
+
+    "binary_sensor": {
+      "watering_due": {
+        "name": "Gießen fällig"
+      },
+      "fertilizing_due": {
+        "name": "Düngen fällig"
+      },
+      "temperature_out_of_range": {
+        "name": "Temperatur außerhalb des Bereichs"
+      },
+      "humidity_out_of_range": {
+        "name": "Luftfeuchtigkeit außerhalb des Bereichs"
+      },
+      "moisture_out_of_range": {
+        "name": "Bodenfeuchte außerhalb des Bereichs"
+      }
+    },
+
+    "button": {
+      "watering_mark_watered": {
+        "name": "Als gegossen markieren"
+      },
+      "fertilizing_mark_fertilized": {
+        "name": "Als gedüngt markieren"
+      }
+    },
+
+    "number": {
+      "watering_interval_days": {
+        "name": "Gießintervall (Tage)"
+      },
+      "fertilizing_interval_days": {
+        "name": "Düngeintervall (Tage)"
+      },
+      "moisture_min": {
+        "name": "Minimale Bodenfeuchte (%)"
+      },
+      "moisture_max": {
+        "name": "Maximale Bodenfeuchte (%)"
+      },
+      "humidity_min": {
+        "name": "Minimale Luftfeuchtigkeit (%)"
+      },
+      "humidity_max": {
+        "name": "Maximale Luftfeuchtigkeit (%)"
+      },
+      "temp_min": {
+        "name": "Minimale Temperatur (°C)"
+      },
+      "temp_max": {
+        "name": "Maximale Temperatur (°C)"
+      },
+      "light_min": {
+        "name": "Minimale Lichtstärke (lx)"
+      },
+      "light_max": {
+        "name": "Maximale Lichtstärke (lx)"
+      }
+    }
+  }
+}
