@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
 
 from .const import (
@@ -29,11 +31,14 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class PlantCareDueBinarySensor(PlantCareEntity, BinarySensorEntity):
+    """Binary sensor that turns on when a given plant care task is due."""
+
     _attr_device_class = "problem"
 
     def __init__(self, entry, coordinator, task_type: str):
         super().__init__(entry, coordinator)
         self.task_type = task_type
+
         plant_id = entry.data.get("plant_id", entry.entry_id)
         plant_name = entry.data.get("plant_name", "Plant")
 
@@ -49,15 +54,40 @@ class PlantCareDueBinarySensor(PlantCareEntity, BinarySensorEntity):
             self._attr_icon = "mdi:bottle-tonic-outline"
 
     @property
-    def is_on(self) -> bool:
-        return bool(self.coordinator.data["tasks"][self.task_type].is_due)
+    def is_on(self) -> bool | None:
+        """
+        Return True/False if known, None if unknown.
+
+        Home Assistant may call this before the coordinator has data.
+        """
+        data: dict[str, Any] | None = self.coordinator.data
+        if not data:
+            return None
+
+        tasks = data.get("tasks")
+        if not isinstance(tasks, dict):
+            return None
+
+        task = tasks.get(self.task_type)
+        if task is None:
+            return None
+
+        return bool(getattr(task, "is_due", False))
 
     @property
     def extra_state_attributes(self):
-        t = self.coordinator.data["tasks"][self.task_type]
+        # Safe even when coordinator.data is None or tasks missing
+        data = self.coordinator.data or {}
+        tasks = data.get("tasks") or {}
+        t = tasks.get(self.task_type)
+
+        if t is None:
+            return {}
+
+        next_due = getattr(t, "next_due_date", None)
         return {
-            "next_due_date": t.next_due_date.isoformat() if t.next_due_date else None,
-            "days_overdue": t.days_overdue,
+            "next_due_date": next_due.isoformat() if next_due else None,
+            "days_overdue": getattr(t, "days_overdue", None),
         }
 
 
@@ -121,13 +151,14 @@ class PlantCareEnvOutOfRangeBinarySensor(PlantCareEntity, BinarySensorEntity):
         return oor is not None
 
     @property
-    def is_on(self) -> bool:
-        oor = self._metric_data().get("out_of_range")
-        return bool(oor) if oor is not None else False
+    def is_on(self) -> bool | None:
+        # Should be True/False/None (None => unavailable/unknown)
+        return self._metric_data().get("out_of_range")
 
     @property
     def icon(self) -> str | None:
-        return self._icon_bad if self.is_on else self._icon_ok
+        # If unknown, show the "ok" icon (or choose whichever you prefer)
+        return self._icon_bad if self.is_on is True else self._icon_ok
 
     @property
     def extra_state_attributes(self):

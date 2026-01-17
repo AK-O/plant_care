@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import EntityCategory
 
@@ -12,6 +14,16 @@ from .const import (
     OPT_MOISTURE_ENTITY_ID,
 )
 from .device import PlantCareEntity
+
+
+def _get_task(data: dict[str, Any] | None, task_type: str):
+    """Safely fetch a task from coordinator data (data may be None during startup)."""
+    if not data:
+        return None
+    tasks = data.get("tasks")
+    if not isinstance(tasks, dict):
+        return None
+    return tasks.get(task_type)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -60,8 +72,12 @@ class PlantCareLastDoneSensor(PlantCareEntity, SensorEntity):
 
     @property
     def native_value(self):
-        task = self.coordinator.data["tasks"][self.task_type]
-        return task.last_done
+        task = _get_task(self.coordinator.data, self.task_type)
+        if task is None:
+            return None  # unknown until coordinator has data
+
+        # Expecting a datetime (device_class timestamp)
+        return getattr(task, "last_done", None)
 
 
 class PlantCareNextDueDateSensor(PlantCareEntity, SensorEntity):
@@ -87,7 +103,11 @@ class PlantCareNextDueDateSensor(PlantCareEntity, SensorEntity):
 
     @property
     def native_value(self):
-        next_due = self.coordinator.data["tasks"][self.task_type].next_due_date
+        task = _get_task(self.coordinator.data, self.task_type)
+        if task is None:
+            return None  # unknown until coordinator has data
+
+        next_due = getattr(task, "next_due_date", None)
         return next_due.isoformat() if next_due else None
 
 
